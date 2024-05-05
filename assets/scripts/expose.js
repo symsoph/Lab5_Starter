@@ -10,7 +10,7 @@ function init() {
     const hornSound = document.querySelector('audio');
     const volumeIcon = document.querySelector('#volume-controls img');
     const jsConfetti = new JSConfetti();
-
+ 
     // add event listeners
     hornSelect.addEventListener('change', updateHorn);
     volumeSlider.addEventListener('input', updateVolume);

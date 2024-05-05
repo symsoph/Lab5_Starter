@@ -26,18 +26,19 @@ function init() {
   // //true audio? 
   //images
 
+  
   /**https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event */
   type_horn.addEventListener("input", (event) => { // runs when user selects from dropdown
+    const selectedHorn = type_horn.value;
     // audio2.play();
-    // picture.src = 'assets/images/${event.target.value}.svg'; // change source of picture
-    button.textContent = 'assets/images/ ${event.target.value} .svg';
+    picture.src = `assets/images/${selectedHorn}.svg`; // change source of picture
+    // IT was BACK TICK
   });
 
   button.addEventListener("click", (event) => {
-    // button.textContent = `Click count: ${event.detail}`;
-    // button.textContent = `Click count: ${audio1.toString()}`;
-    
-    audio1.play();
+    const selectedHorn = type_horn.value;
+    let sound = new Audio(`assets/audio/${selectedHorn}.mp3`); 
+    sound.play();
     
 
   });

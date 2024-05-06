@@ -3,62 +3,77 @@
 window.addEventListener('DOMContentLoaded', init);
 
 function init() {
-  // TODO
-  const talkButton = document.querySelector('button');
-  const voiceSelect = document.querySelector("#voice-select");
-  const faceImage = document.querySelector('img');
-  const speechSyn = window.speechSynthesis;
+  const synth = window.speechSynthesis;
+  const button = document.querySelector("button");
+  const inputTxt = document.getElementById("text-to-speak");
+  const voiceSelect = document.querySelector("select");
+  const faceImg = document.querySelector('img');
 
-  talkButton.addEventListener('click', speakText);
-  speechSyn.addEventListener('voiceschanged', populateVoiceList);
+button.addEventListener('click', speak);
+synth.addEventListener('voiceschanged', populateVoiceList);
 
-  populateVoiceList();
+  let voices = [];
 
   function populateVoiceList() {
-    // get available voices
-    const voices = speechSyn.getVoices();
+    voices = synth.getVoices();
 
-    voiceSelect.innerHTML = '';
+  const selectedIndex =
+    voiceSelect.selectedIndex < 0 ? 0 : voiceSelect.selectedIndex;
+  voiceSelect.innerHTML = "";
 
-    // create voice select dropdown
-    voices.forEach((voice, index) => {
-      const option = document.createElement('option');
-      option.textContent = voice.name;
-      option.setAttribute('value', index);
-      voiceSelect.appendChild(option);
-    });
+  for (let i = 0; i < voices.length; i++) {
+    const option = document.createElement("option");
+    option.textContent = `${voices[i].name} (${voices[i].lang})`;
+
+    if (voices[i].default) {
+      option.textContent += " -- DEFAULT";
+    }
+
+    option.setAttribute("data-lang", voices[i].lang);
+    option.setAttribute("data-name", voices[i].name);
+    voiceSelect.appendChild(option);
   }
+  voiceSelect.selectedIndex = selectedIndex;
+}
 
-  function speakText() {
-    // get the text from textarea
-    const textToSpeak = document.getElementById('text-to-speak').value;
+populateVoiceList();
 
-    // get selected voice index from dropdown
-    const selectedVoiceIndex = voiceSelect.value;
+if (speechSynthesis.onvoiceschanged !== undefined) {
+  speechSynthesis.onvoiceschanged = populateVoiceList;
+}
 
-    // get the selected voice from voices list
-    const voices = speechSyn.getVoices();
-    const selectedVoice = voices[selectedVoiceIndex];
-
-    // create a SpeechSynthesisUtterance object
-    const utterance = new SpeechSynthesisUtterance(textToSpeak);
-
-    // set the selected voice for the utterance
-    utterance.voice = selectedVoice;
-
-    // set event listener for when speech starts
-    utterance.onstart = function () {
-      // swap smiling to open
-      faceImage.src = 'assets/images/smiling-open.png';
+function speak() {
+  // when text is inputted
+  if (inputTxt.value !== "") {
+    const utterThis = new SpeechSynthesisUtterance(inputTxt.value);
+   
+// set event listener for when speech starts
+ utterThis.onstart = function () {
+// swap smiling to open
+      faceImg.src = 'assets/images/smiling-open.png';
     };
 
-    // set event listener for when speech ends
-    utterance.onend = function () {
-      // swap open to smiling
-      faceImage.src = 'assets/images/smiling.png';
+    // when done speaking
+    utterThis.onend = function () {
+      faceImg.src = 'assets/images/smiling.png';
+      console.log("SpeechSynthesisUtterance.onend");
     };
-
-    // speak the text
-    speechSyn.speak(utterance);
+    
+    utterThis.onerror = function () {
+      console.error("SpeechSynthesisUtterance.onerror");
+    };
+    // selected voice
+    const selectedOption =
+    voiceSelect.selectedOptions[0].getAttribute("data-name");
+    
+    for (let i = 0; i < voices.length; i++) {
+      if (voices[i].name === selectedOption) {
+        utterThis.voice = voices[i];
+        break;
+      }
   }
+  synth.speak(utterThis);
+}
+}
+
 }

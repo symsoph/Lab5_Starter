@@ -1,6 +1,6 @@
 {
     "source": {
-      "include": ["__tests__","src","assets/scripts/", "code-to-unit-test"],
+      "include": ["__tests__"],
       "includePattern": ".+\\.js(doc|x)?$"
     },
     "plugins": ["plugins/markdown"],

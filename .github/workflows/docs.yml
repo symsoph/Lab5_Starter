@@ -1,0 +1,26 @@
+name: Generate Docs
+on:
+  push:
+    branches:
+      - main
+jobs:
+  generate_docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependencies
+        run: npm install
+      - name: Generate Docs
+        run: npx jsdoc -c jsdoc.json
+      - name: Commit Docs
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Generate Docs"
+      - name: Push Docs
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: docs-pages
+          force: true
